@@ -20,6 +20,27 @@ Designed and implemented a complete authentication system with signup and login 
 
 The authentication flow utilizes HTTP-only cookies to securely transmit JWTs between the client and server, preventing XSS vulnerabilities. 
 
+```mermaid
+sequenceDiagram
+    participant User
+    participant Client
+    participant Server
+    participant MongoDB
+    
+    User->>Client: Enters Credentials
+    Client->>Server: POST /login or /signup
+    Server->>MongoDB: Verify/Store User Data
+    MongoDB-->>Server: Return User Record
+    Server->>Server: Hash Password (bcrypt) / Generate JWT
+    Server-->>Client: Set HttpOnly Cookie (token)
+    Client-->>User: Redirect to /syntecxhub
+    
+    User->>Client: Requests Protected Route
+    Client->>Server: GET /syntecxhub (with Cookie)
+    Server->>Server: verifyToken Middleware
+    Server-->>Client: Render Dashboard or 401 Unauthorized
+```
+
 ### 1. Registration Flow (Sign Up)
 1. User submits `username`, `email`, and `password`.
 2. The server queries MongoDB to ensure the username or email is not already registered.
